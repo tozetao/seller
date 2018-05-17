@@ -1,0 +1,325 @@
+<template>
+    <div class="header">
+        <div class="content-wrapper">
+            <div class="avatar">
+                <img alt="商家头像" v-bind:src="seller.avatar">
+            </div>
+            <div class="content">
+                <div class="title">
+                    <span class="brand"></span>
+                    <span class="name">{{ seller.name }}</span>
+                </div>
+                <div class="description">
+                    {{seller.description}}/{{seller.deliveryTime}}
+                </div>
+                <div v-if="seller.supports" class="supports">
+                    <span class="icon" v-bind:class="iconMap[seller.supports[0].type]"></span><span class="text">{{seller.supports[0].description}}</span>
+                </div>
+            </div>
+            <div v-if="seller.supports" class="supports-count" @click="showDetail">
+                <span class="count">{{seller.supports.length}}</span>
+                <i class="icon-keyboard_arrow_right"></i>
+            </div>
+        </div>
+
+        <div class="bulletin-warpper" @click="showDetail">
+            <span class="bulletin-title"></span>
+            <span class="bulletin-text">{{seller.bulletin}}</span>
+            <i class="icon-keyboard_arrow_right"></i>
+        </div>
+
+        <div class="background">
+            <img v-bind:src="seller.avatar" width="100%" height="100%" alt="">
+        </div>
+
+        <div class="detail" v-show="detailStatus">
+            <div class="detail-wrapper clearfix">
+                <div class="detail-main">
+                    <div class="name">
+                        {{seller.name}}
+                    </div>
+                    <div class="star-wrapper">
+                        <star :size="48" :score="seller.score"></star>
+                    </div>
+
+                    <div class="title">
+                        <div class="line"></div>
+                        <div class="text">优惠信息</div>
+                        <div class="line"></div>
+                    </div>
+
+                    <ul v-if="seller.supports" class="supports">
+                        <li class="support-item" v-for="(item, index) in seller.supports" :key="index">
+                            <span class="icon" :class="iconMap[seller.supports[index].type]"></span>
+                            <span class="text">{{seller.supports[index].description}}</span>
+                        </li>
+                    </ul>
+
+                    <div class="title">
+                        <div class="line"></div>
+                        <div class="text">优惠信息</div>
+                        <div class="line"></div>
+                    </div>
+
+                    <div class="bulletin">
+                        <p class="content">
+                            {{seller.bulletin}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <transition name="fade">
+                <div class="detail-close" @click="hideDetail">
+                    <i class="icon-close"></i>
+                </div>
+            </transition>
+        </div>
+
+    </div>
+</template>
+
+<script type="text/ecmascript-6">
+import star from '../star/star'
+export default {
+    data () {
+        return {
+            name: 'header',
+            seller: {},
+            detailStatus: false
+        }
+    },
+
+    methods: {
+        showDetail: function () {
+            this.detailStatus = true
+        },
+        hideDetail () {
+            this.detailStatus = false
+        }
+    },
+
+    created () {
+        this.$nextTick(() => {
+            this.$http.get('/app/seller').then(response => {
+                if (response.body.errno === 0) {
+                    this.seller = response.body.data
+                }
+
+                console.log(this.seller.supports)
+            })
+        })
+        this.iconMap = ['decrease', 'discount', 'guarantee', 'invoice', 'special']
+    },
+
+    components: {
+        star
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+@import "../../common/stylus/mixin.styl"
+
+.header
+    color #fff
+    position: relative
+    background: rgba(7,17,27,0.4)
+    overflow: hidden
+    .content-wrapper
+        padding 24px 12px 18px 24px
+        font-size 0
+        position relative
+        .avatar
+            display inline-block
+            vertical-align top
+            img
+                width: 68px
+                height: 68px
+        .content
+            display: inline-block
+            font-size 14px
+            margin-left 17px
+            vertical-align top
+            .title
+                margin 2px 0 8px 0
+                .brand
+                    vertical-align top
+                    display inline-block
+                    width 30px
+                    height 18px
+                    bg-image('brand')
+                    -webkit-background-size: 30px 18px
+                    background-size: 30px 18px
+                    background-repeat no-repeat
+                .name
+                    vertical-align top
+                    margin-left 6px
+                    font-size 16px
+                    line-height: 18px
+                    font-weight bold
+            .description
+                margin-bottom 10px
+                line-height 12px
+                font-size 12px
+
+            .supports
+                .icon
+                    vertical-align top
+                    display inline-block
+                    width 12px
+                    height: 12px
+                    background-repeat no-repeat
+                    background-size 12px 12px
+                    margin-right 4px
+                    &.decrease
+                        bg-image('decrease_1')
+                    &.discount
+                        bg-image('discount_1')
+                    &.invoice
+                        bg-image('invoice_1')
+                    &.guarantee
+                        bg-image('guarantee_1')
+                .text
+                    vertical-align top
+                    line-height: 12px
+                    font-size: 12px
+
+        .supports-count
+            position: absolute
+            right:12px
+            bottom:18px
+            padding: 0 8px
+            height:24px
+            line-height:24px
+            border-radius 14px
+            background: rgba(0,0,0, 0.2)
+            text-align center
+            .count
+                font-size: 10px
+                vertical-align top
+            .icon-keyboard_arrow_right
+                font-size: 10px
+                vertical-align top
+                line-height 24px
+                margin-left:2px
+    .bulletin-warpper
+        position relative
+        background rgba(7,17,27,0.2)
+        height:28px
+        line-height 28px
+        padding: 0 22px 0 12px
+        white-space nowrap
+        overflow: hidden
+        text-overflow ellipsis
+        .bulletin-title
+            vertical-align top
+            margin-top 8px
+            width: 22px
+            height: 12px
+            display: inline-block
+            background-size 22px 12px
+            background-repeat no-repeat
+            bg-image('bulletin')
+        .bulletin-text
+            vertical-align top
+            font-size:10px
+            margin: 0 4px
+        .icon-keyboard_arrow_right
+            position: absolute
+            font-size: 10px
+            right 12px
+            top 8px
+    .background
+        position: absolute
+        top:0
+        left:0
+        width: 100%
+        height: 100%
+        z-index -1
+        filter: blur(10px)
+    .detail
+        position fixed
+        width 100%
+        height 100%
+        top: 0
+        left 0
+        overflow auto
+        background: rgba(7,17,27,0.8)
+        &.fade-enter-active, &.fade-leave-active
+            transition: opacity 1s;
+        &.fade-enter, &.fade-leave-to
+            opacity: 0;
+
+        .detail-wrapper
+            min-height:100%
+            width: 100%
+            .detail-main
+                margin-top 64px
+                padding-bottom 64px
+                .name
+                    text-align center
+                    font-size:20px
+                    line-height:20px
+                    font-weight:700
+                .star-wrapper
+                    margin-top 10px
+                    padding: 2px 0
+                    text-align: center
+                .title
+                    display: flex
+                    width: 80%
+                    margin: 28px auto 24px auto
+                    .line
+                        flex: 1
+                        position: relative
+                        top: -6px
+                        border-bottom:1px solid rgba(255,255,255,0.2)
+                    .text
+                        padding: 0 12px
+                        font-weight: 700
+                        font-size: 14px
+                .supports
+                    width: 80%
+                    margin 0 auto
+                    .support-item
+                        padding:0 12px
+                        margin-bottom 12px
+                        font-size: 0
+                        &:last-child
+                            margin-bottom: 0
+                        .icon
+                            display: inline-block
+                            width: 16px
+                            height: 16px
+                            vertical-align top
+                            margin-right:6px
+                            -webkit-background-size: 16px
+                            background-size: 16px
+                            background-repeat:no-repeat
+                            &.decrease
+                                bg-image('decrease_2')
+                            &.discount
+                                bg-image('discount_2')
+                            &.invoice
+                                bg-image('invoice_2')
+                            &.guarantee
+                                bg-image('guarantee_2')
+                        .text
+                                line-height:14px
+                            font-size:14px
+
+                .bulletin
+                    width: 80%
+                    margin:0 auto
+                    .content
+                        padding: 0 12px
+                        line-height: 24px
+                        font-size:12px
+        .detail-close
+            position: relative
+            margin -64px auto 0 auto
+            width 32px
+            height 32px
+            font-size: 32px
+            clear both
+</style>
