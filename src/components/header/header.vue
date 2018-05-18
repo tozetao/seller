@@ -104,8 +104,6 @@ export default {
                 if (response.body.errno === 0) {
                     this.seller = response.body.data
                 }
-
-                console.log(this.seller.supports)
             })
         })
         this.iconMap = ['decrease', 'discount', 'guarantee', 'invoice', 'special']
@@ -245,6 +243,7 @@ export default {
         left 0
         overflow auto
         background: rgba(7,17,27,0.8)
+        z-index 400
         &.fade-enter-active, &.fade-leave-active
             transition: opacity 1s;
         &.fade-enter, &.fade-leave-to

@@ -44,4 +44,4 @@ new Vue({
     }
 }).$mount('#app')
 
-router.push('/app/ratings')
+router.push('/app/goods')

@@ -13,11 +13,7 @@
               <router-link to="/app/seller">商家</router-link>
           </div>
       </div>
-
-      <transition>
-          <router-view></router-view>
-      </transition>
-
+      <router-view></router-view>
   </div>
 </template>
 
